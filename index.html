@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Management System (Refactored)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ========== Sidebar ========== -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">S</span>
+        <div class="brand-text">
+          <strong>StudentDesk</strong>
+          <small>Management System</small>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="dashboard" data-action="navigate">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-view="students" data-action="navigate">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14.3c2 .8 3.5 2.6 3.5 5.7"/></svg>
+          <span>Students</span>
+        </button>
+        <button class="nav-item" data-view="reports" data-action="navigate">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h7M9 17h5"/></svg>
+          <span>Reports</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <span class="version-tag">After refactoring</span>
+        <small>SEP Microproject, v2.0</small>
+      </div>
+    </aside>
+
+    <!-- ========== Main content ========== -->
+    <main class="content">
+
+      <!-- ----- Dashboard ----- -->
+      <section id="view-dashboard" class="view active">
+        <header class="page-head">
+          <div>
+            <h1>Dashboard</h1>
+            <p>A summary of every student record in the system.</p>
+          </div>
+          <button class="btn btn-primary" data-action="add-student">Add student</button>
+        </header>
+
+        <div class="stats">
+          <article class="stat stat-main">
+            <span class="stat-label">Total students</span>
+            <strong class="stat-value" id="stat-total">0</strong>
+          </article>
+          <article class="stat">
+            <span class="stat-label">Average marks</span>
+            <strong class="stat-value" id="stat-marks">0</strong>
+          </article>
+          <article class="stat">
+            <span class="stat-label">Average attendance</span>
+            <strong class="stat-value" id="stat-attendance">0%</strong>
+          </article>
+          <article class="stat">
+            <span class="stat-label">Students passing</span>
+            <strong class="stat-value" id="stat-passing">0</strong>
+          </article>
+        </div>
+
+        <div class="panel">
+          <h2>Attendance below <span id="low-att-threshold"></span>%</h2>
+          <p class="panel-sub">These students may need a follow-up.</p>
+          <div id="low-attendance-list"></div>
+        </div>
+      </section>
+
+      <!-- ----- Students ----- -->
+      <section id="view-students" class="view">
+        <header class="page-head">
+          <div>
+            <h1>Students</h1>
+            <p>Add, edit, search and remove student records.</p>
+          </div>
+          <button class="btn btn-primary" data-action="add-student">Add student</button>
+        </header>
+
+        <div class="panel panel-flush">
+          <div class="toolbar">
+            <div class="search">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+              <input type="search" id="search-input" placeholder="Search by name, roll number or branch" aria-label="Search students">
+            </div>
+            <span class="result-count" id="result-count"></span>
+          </div>
+
+          <div class="table-wrap" id="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Roll no.</th>
+                  <th>Name</th>
+                  <th>Branch</th>
+                  <th class="num">Sem</th>
+                  <th class="num">Marks</th>
+                  <th>Attendance</th>
+                  <th>Result</th>
+                  <th class="actions-col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="student-table-body"></tbody>
+            </table>
+          </div>
+
+          <div class="empty" id="empty-state" hidden></div>
+        </div>
+      </section>
+
+      <!-- ----- Reports ----- -->
+      <section id="view-reports" class="view">
+        <header class="page-head">
+          <div>
+            <h1>Reports</h1>
+            <p>Branch-wise results and top performers.</p>
+          </div>
+          <button class="btn btn-secondary" data-action="export-csv">Download CSV</button>
+        </header>
+
+        <div class="panel panel-flush">
+          <div class="panel-pad"><h2>Branch summary</h2></div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Branch</th>
+                  <th class="num">Students</th>
+                  <th class="num">Avg. marks</th>
+                  <th class="num">Avg. attendance</th>
+                  <th class="num">Passing</th>
+                </tr>
+              </thead>
+              <tbody id="branch-report-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Top performers</h2>
+          <p class="panel-sub">The three highest marks across all branches.</p>
+          <div id="top-performers-list"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========== Add / Edit modal ========== -->
+  <div class="overlay" id="student-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <header class="modal-head">
+        <h2 id="modal-title">Add student</h2>
+        <button class="icon-btn" data-action="close-student-modal" aria-label="Close">&times;</button>
+      </header>
+
+      <form id="student-form" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="f-roll">Roll number</label>
+            <input type="text" id="f-roll" placeholder="e.g. 46" autocomplete="off">
+            <span class="error" id="err-roll"></span>
+          </div>
+          <div class="field">
+            <label for="f-name">Full name</label>
+            <input type="text" id="f-name" placeholder="e.g. Aayush Salvi" autocomplete="off">
+            <span class="error" id="err-name"></span>
+          </div>
+          <div class="field">
+            <label for="f-branch">Branch</label>
+            <select id="f-branch">
+              <option value="">Select a branch</option>
+            </select>
+            <span class="error" id="err-branch"></span>
+          </div>
+          <div class="field">
+            <label for="f-semester">Semester</label>
+            <select id="f-semester">
+              <option value="">Select a semester</option>
+            </select>
+            <span class="error" id="err-semester"></span>
+          </div>
+          <div class="field">
+            <label for="f-marks">Marks (out of 100)</label>
+            <input type="number" id="f-marks" placeholder="0 to 100" step="0.1">
+            <span class="error" id="err-marks"></span>
+          </div>
+          <div class="field">
+            <label for="f-attendance">Attendance (%)</label>
+            <input type="number" id="f-attendance" placeholder="0 to 100" step="0.1">
+            <span class="error" id="err-attendance"></span>
+          </div>
+        </div>
+
+        <footer class="modal-foot">
+          <button type="button" class="btn btn-secondary" data-action="close-student-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="save-btn">Save student</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========== Delete confirmation ========== -->
+  <div class="overlay" id="confirm-modal" aria-hidden="true">
+    <div class="modal modal-small" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+      <header class="modal-head">
+        <h2 id="confirm-title">Delete student?</h2>
+      </header>
+      <p class="confirm-text" id="confirm-text"></p>
+      <footer class="modal-foot">
+        <button class="btn btn-secondary" data-action="cancel-delete">Keep student</button>
+        <button class="btn btn-danger" data-action="confirm-delete">Delete student</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ========== Toast ========== -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/storageService.js"></script>
+  <script src="js/studentService.js"></script>
+  <script src="js/validator.js"></script>
+  <script src="js/statsCalculator.js"></script>
+  <script src="js/reportService.js"></script>
+  <script src="js/uiRenderer.js"></script>
+  <script src="js/uiController.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
