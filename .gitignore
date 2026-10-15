@@ -4,3 +4,13 @@ Thumbs.db
 .env
 node_modules/
 .scannerwork/
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+tfplan
+crash.log
+terraform.tfstate.backup
+.terraform.tfstate.lock.info
